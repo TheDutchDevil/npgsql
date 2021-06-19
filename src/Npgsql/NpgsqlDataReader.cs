@@ -54,7 +54,7 @@ namespace Npgsql
         /// <summary>
         /// Holds the list of statements being executed by this reader.
         /// </summary>
-        List<NpgsqlStatement> _statements = default!;
+        List<NpgsqlBatchCommand> _statements = default!;
 
         /// <summary>
         /// The index of the current query resultset we're processing (within a multiquery)
@@ -148,7 +148,7 @@ namespace Npgsql
         }
 
         internal void Init(
-            NpgsqlCommand command, CommandBehavior behavior, List<NpgsqlStatement> statements, Task? sendTask = null)
+            NpgsqlCommand command, CommandBehavior behavior, List<NpgsqlBatchCommand> statements, Task? sendTask = null)
         {
             Command = command;
             _connection = command.Connection;
@@ -464,7 +464,7 @@ namespace Npgsql
                         continue;
                     }
 
-                    if (StatementIndex == 0 && Command.Parameters.HasOutputParameters)
+                    if (!Command.IsWrappedByBatch && StatementIndex == 0 && Command.Parameters.HasOutputParameters)
                     {
                         // If output parameters are present and this is the first row of the first resultset,
                         // we must always read it in non-sequential mode because it will be traversed twice (once
@@ -777,7 +777,7 @@ namespace Npgsql
         /// a statement-by-statement basis, unlike <see cref="NpgsqlDataReader.RecordsAffected"/>
         /// which exposes an aggregation across all statements.
         /// </remarks>
-        public IReadOnlyList<NpgsqlStatement> Statements => _statements.AsReadOnly();
+        public IReadOnlyList<NpgsqlBatchCommand> Statements => _statements.AsReadOnly();
 
         /// <summary>
         /// Gets a value that indicates whether this DbDataReader contains one or more rows.

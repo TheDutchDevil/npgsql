@@ -172,26 +172,26 @@ COMMIT;";
 
             var i = 0;
             Assert.That(reader.Statements, Has.Count.EqualTo(7));
-            Assert.That(reader.Statements[i].SQL, Is.EqualTo($"INSERT INTO {table} (name) VALUES ('a')"));
+            Assert.That(reader.Statements[i].FinalCommandText, Is.EqualTo($"INSERT INTO {table} (name) VALUES ('a')"));
             Assert.That(reader.Statements[i].StatementType, Is.EqualTo(StatementType.Insert));
             Assert.That(reader.Statements[i].Rows, Is.EqualTo(1));
-            Assert.That(reader.Statements[++i].SQL, Is.EqualTo($"UPDATE {table} SET name='b' WHERE name='doesnt_exist'"));
+            Assert.That(reader.Statements[++i].FinalCommandText, Is.EqualTo($"UPDATE {table} SET name='b' WHERE name='doesnt_exist'"));
             Assert.That(reader.Statements[i].StatementType, Is.EqualTo(StatementType.Update));
             Assert.That(reader.Statements[i].Rows, Is.EqualTo(0));
-            Assert.That(reader.Statements[++i].SQL, Is.EqualTo($"UPDATE {table} SET name='b'"));
+            Assert.That(reader.Statements[++i].FinalCommandText, Is.EqualTo($"UPDATE {table} SET name='b'"));
             Assert.That(reader.Statements[i].StatementType, Is.EqualTo(StatementType.Update));
             Assert.That(reader.Statements[i].Rows, Is.EqualTo(1));
-            Assert.That(reader.Statements[++i].SQL, Is.EqualTo("BEGIN"));
+            Assert.That(reader.Statements[++i].FinalCommandText, Is.EqualTo("BEGIN"));
             Assert.That(reader.Statements[i].StatementType, Is.EqualTo(StatementType.Other));
             Assert.That(reader.Statements[i].Rows, Is.EqualTo(0));
             await reader.NextResultAsync(); // Consume SELECT result set to parse the CommandComplete
-            Assert.That(reader.Statements[++i].SQL, Is.EqualTo($"SELECT name FROM {table}"));
+            Assert.That(reader.Statements[++i].FinalCommandText, Is.EqualTo($"SELECT name FROM {table}"));
             Assert.That(reader.Statements[i].StatementType, Is.EqualTo(StatementType.Select));
             Assert.That(reader.Statements[i].Rows, Is.EqualTo(1));
-            Assert.That(reader.Statements[++i].SQL, Is.EqualTo($"DELETE FROM {table}"));
+            Assert.That(reader.Statements[++i].FinalCommandText, Is.EqualTo($"DELETE FROM {table}"));
             Assert.That(reader.Statements[i].StatementType, Is.EqualTo(StatementType.Delete));
             Assert.That(reader.Statements[i].Rows, Is.EqualTo(1));
-            Assert.That(reader.Statements[++i].SQL, Is.EqualTo("COMMIT"));
+            Assert.That(reader.Statements[++i].FinalCommandText, Is.EqualTo("COMMIT"));
             Assert.That(reader.Statements[i].StatementType, Is.EqualTo(StatementType.Other));
             Assert.That(reader.Statements[i].Rows, Is.EqualTo(0));
         }
