@@ -825,9 +825,16 @@ GROUP BY pg_proc.proargnames, pg_proc.proargtypes, pg_proc.proallargtypes, pg_pr
                     }
                     break;
 
-                case PlaceholderType.NoParameters:
-                    // Note that queries with no parameters are parsed just like queries with named parameters, since they may contain a
-                    // semicolon (legacy batching).
+                case PlaceholderType.NoParameters when batchCommand is null:
+                    if (batchCommand is null)
+                    {
+                        // Note that non-batch commands with no parameters are parsed just like queries with named parameters, since they
+                        // may contain a semicolon (legacy batching).
+                        goto case PlaceholderType.Named;
+                    }
+                    else
+                        goto case PlaceholderType.Positional;
+
                 case PlaceholderType.Named:
                     // The parser is cached on NpgsqlConnector - unless we're in multiplexing mode.
                     parser ??= new SqlQueryParser();
